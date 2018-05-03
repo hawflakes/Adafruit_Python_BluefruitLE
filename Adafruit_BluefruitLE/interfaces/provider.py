@@ -103,8 +103,6 @@ class Provider(object):
         also optional.  Will not block, instead it returns immediately with a
         list of found devices (which might be empty).
         """
-        # Convert service UUID list to counter for quicker comparison.
-        expected = set(service_uuids)
         # Grab all the devices.
         devices = self.list_devices()
         # Filter to just the devices that have the requested service UUID/name.
@@ -115,10 +113,11 @@ class Provider(object):
                     # Check if the name matches and add the device.
                     found.append(device)
             else:
-                # Check if the advertised UUIDs have at least the expected UUIDs.
-                actual = set(device.advertised)
-                if actual >= expected:
-                    found.append(device)
+                # Check if any of the advertised UUIDs are ones we're looking for UUIDs.
+                # oxe: since when will there be more than one advertised UUID ?
+                for advertised in device.advertised:
+                    if advertised in service_uuids:
+                        found.append(device)
         return found
 
 
