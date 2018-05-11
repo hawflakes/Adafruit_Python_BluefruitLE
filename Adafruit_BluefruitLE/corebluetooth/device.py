@@ -102,6 +102,9 @@ class CoreBluetoothDevice(Device):
         if 'kCBAdvDataManufacturerData' in advertised:
             self._manufacturerData = advertised['kCBAdvDataManufacturerData'].bytes().tolist()
 
+    def _update_rssi(self, rssi):
+        self._rssi = rssi
+
     def _characteristics_discovered(self, service):
         """Called when GATT characteristics have been discovered."""
         # Characteristics for the specified service were discovered.  Update
@@ -200,5 +203,9 @@ class CoreBluetoothDevice(Device):
         self._rssi_read.clear()
         self._peripheral.readRSSI()
         if not self._rssi_read.wait(timeout_sec):
-            raise RuntimeError('Exceeded timeout waiting for RSSI value!')
+             raise RuntimeError('Exceeded timeout waiting for RSSI value!')
+        return self._rssi
+
+    @property
+    def rssi_last(self):
         return self._rssi
